@@ -1,0 +1,84 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+}
+
+li {
+    list-style: none;
+}
+
+.app {
+    display: flex;
+    background-color: #f2f5f7;
+}
+
+.header {
+    width: 15%;
+    padding: 30px;
+    background-color: #ffff;
+    margin: 20px;
+    height: 100vh;
+}
+
+.header ul li a {
+    text-decoration: none;
+    padding: 10px;
+    display: block;
+    text-align: center;
+}
+
+.info {
+    background-color: #ffff;
+    margin: 20px;
+    width: 85%;
+    padding: 30px;
+}
+
+.info table {
+    width: 100%;
+}
+
+.info table th,
+td {
+    text-align: left;
+    padding: 8px;
+}
+
+#info button {
+    margin-left: 5px;
+    border: 1px solid #ccc;
+    padding: 5px;
+}
+
+#add-update {
+    display: none;
+}
+
+#add-update button {
+    display: block;
+    margin-top: 10px;
+}
+
+.abc {
+    display: flex;
+}
+
+.abc p,
+input,
+select {
+    padding: 0.5rem;
+}
+
+.abc input {
+    margin-right: 0.5rem;
+}
+
+.abc button {
+    text-align: center;
+}
+
+#add-update button {
+    padding: 0.5rem;
+}

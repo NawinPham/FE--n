@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" href="assets/css/login.css">
+    <link rel="stylesheet" href="assets/font/css/all.css">
+    <title>dangnhap</title>
+</head>
+
+<body>
+    <div class="page-wrapper">
+        <div class="container">
+            <div class="card">
+                <div class="card-body">
+                    <form action="" method="POST" id="frmlogin">
+                        <label>Tên đăng nhập</label>
+                        <input type="text" id="username" placeholder="Tên đăng nhập">
+                        <label>Mật khẩu</label>
+                        <input type="password" id="password" placeholder="Mật khẩu">
+                        <button type="submit" id="btnlogin">ĐĂNG NHẬP</button>
+                        <div class="signup">
+                            <label>Bạn chưa có tài khoản? </label>
+                            <a href="/Signup.html">Đăng kí</a>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="/assets/js/ENV.js"></script>
+<script>
+    $("#frmlogin").on("submit", function (e) {
+        e.preventDefault();
+
+
+        var data = {
+            "username": $("#username").val(),
+            "password": $("#password").val()
+        }
+        $.ajax(baseUrl + "User/login", {
+            method: "POST",
+            timeout: 0,
+            headers: {
+                "Content-Type": "application/json"
+            },
+            data: JSON.stringify(data),
+
+
+            success: (res) => {
+                if (res.status == true) {
+                    Swal.fire(
+                        {
+                            title: "Lưu ý",
+                            text: "Đăng nhập thành công !",
+                            icon: 'info',
+                            confirmButtonText: 'OK'
+                        }
+                    );
+                    localStorage.setItem(varJWT, res.token);
+                    localStorage.setItem(varUsername, res.username);
+                    setTimeout(() => {
+                        location.href = "accounts.html";
+                    }, 1500);
+                }
+                else {
+                    Swal.fire(
+                        {
+                            title: "Lưu ý",
+                            text: "Thông tin tài khoản mật khẩu không chính xác !",
+                            icon: 'info',
+                            confirmButtonText: 'OK'
+                        }
+                    );
+                }
+                $("#btnlogin").text("ĐĂNG NHẬP").prop("disabled", false);
+            }
+        });
+    })
+
+</script>
+
+
+</html>

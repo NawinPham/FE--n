@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tài khoản</title>
+    <link rel="stylesheet" href="assets/css/products.css">
+</head>
+
+<body>
+    <div class="app">
+        <div class="header">
+            <ul>
+                <li><a href="accounts.html">Tài khoản</a></li>
+                <li><a href="">Sản phẩm</a></li>
+                <li><a href="">Loại hàng</a></li>
+            </ul>
+        </div>
+        <div class="info">
+            <div class="add-product">
+                <button onclick="show()">Thêm sản phẩm</button>
+            </div>
+            <div id="add-update">
+                <div class="abc">
+                    <div class="left">
+                        <input type="hidden" id="idProduct">
+
+                        <p>Tên sản phẩm</p>
+                        <input type="text" placeholder="Tên sản phẩm" id="upname">
+                        <p>Giá</p>
+                        <input type="text" placeholder="Nhập giá" id="upprice">
+                    </div>
+                    <div class="right">
+                        <p>Số lượng</p>
+                        <input type="text" placeholder="Nhập số lượng" id="upquantity">
+                        <p>Ghi chú</p>
+                        <input type="text" placeholder="Ghi chú" id="updescription">
+                        <p>Loại hàng</p>
+                        <select name="" id="upcategory_id">
+                        </select>
+                        <p>Hình ảnh</p>
+                        <input type="text" placeholder="Nhập link ảnh" id="upimage">
+                    </div>
+                </div>
+                <button id="btninsert">Cập nhật</button>
+                <button onclick="ExitUpdate()">X</button>
+            </div>
+            <div id="add-insert">
+                <div class="abc">
+                    <div class="left">
+                        <p>Tên sản phẩm</p>
+                        <input type="text" placeholder="Tên sản phẩm" id="name">
+                        <p>Giá</p>
+                        <input type="text" placeholder="Nhập giá" id="price">
+                    </div>
+                    <div class="right">
+                        <p>Số lượng</p>
+                        <input type="text" placeholder="Nhập số lượng" id="quantity">
+                        <p>Ghi chú</p>
+                        <input type="text" placeholder="Ghi chú" id="description">
+                        <p>Loại hàng</p>
+                        <select name="" id="category_id">
+                        </select>
+                        <p>Hình ảnh</p>
+                        <input type="text" placeholder="Nhập link ảnh" id="image">
+                    </div>
+                </div>
+                <button id="btnadd">Thêm</button>
+                <button onclick="exit()">X</button>
+            </div>
+            <table id="table">
+                <thead>
+                    <tr>
+                        <th>
+                            ID
+                        </th>
+
+                        <th>
+                            Tên sản phẩm
+                        </th>
+                        <th>
+                            Giá sản phẩm
+                        </th>
+                        <th>
+                            Số lượng
+                        </th>
+                        <th>
+                            Ghi chú
+                        </th>
+                        <th>
+                            Mã loại
+                        </th>
+                        <th>
+                            Ảnh
+                        </th>
+                        <th>
+                            Thao tác
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="info">
+                    <img src="" alt="">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script src="assets/js/ENV.js"></script>
+<script src="assets/js/function.js"></script>
+<script>
+    $(document).ready(() => {
+        checkaccount();
+
+        $.ajax(baseUrl + "Products/getList", {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + localStorage.getItem(varJWT)
+            },
+            success: (res) => {
+                var info = document.getElementById('info');
+                info.innerHTML = "";
+                res.forEach(product => {
+                    info.innerHTML = info.innerHTML + '<tr>' +
+                        '<td>' + '<span>' + product.id + '</span>' + '</td>' +
+                        '<td>' + '<span>' + product.name + '</span>' + '</td>' +
+                        '<td>' + '<span>' + product.price + '</span>' + '</td>' +
+                        '<td>' + '<span>' + product.quantity + '</span>' + '</td>' +
+                        '<td>' + '<span class="description">' + product.description + '</span>' + '</td>' +
+                        '<td>' + '<span>' + product.category_id + '</span>' + '</td>' +
+                        '<td>' + '<img src="' + product.image + '" alt="" class="img">' + '</td>' +
+                        '<td>' +
+                        '<div class="acctions">' +
+                        '<button onclick="deleteRow(' + product.id + ')">Xoa</button><button onclick="updateRow(`add-update`,' + product.id + ')">Cập nhật</button>' +
+                        '</div>' +
+                        '</td>' +
+                        '</tr>';
+                })
+            }
+        });
+
+        $.ajax(baseUrl + "Categorys/getList", {
+            method: "GET",
+            headers: {
+                "Authorization": "Bearer " + localStorage.getItem(varJWT)
+            },
+            success: (res) => {
+                var option = document.getElementById("category_id");
+                var option2 = document.getElementById("upcategory_id");
+                option.innerHTML = "";
+                res.forEach(category => {
+                    option.innerHTML = option.innerHTML + '<option value="' + category.id + '">' + category.name + '</option>';
+                    option2.innerHTML = option2.innerHTML + '<option value="' + category.id + '">' + category.name + '</option>';
+                })
+            }
+        })
+
+        $("#btninsert").on('click', () => {
+            var data = {
+                "id": $("#idProduct").val(),
+                "name": $("#upname").val(),
+                "price": $("#upprice").val(),
+                "quantity": $("#upquantity").val(),
+                "description": $("#updescription").val(),
+                "category_id": $("#upcategory_id").val(),
+                "image": $("#upimage").val()
+            }
+            $.ajax(baseUrl + "Products/Update-products", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + localStorage.getItem(varJWT)
+                },
+                data: JSON.stringify(data),
+                success: (res) => {
+                    if (res.status == true) {
+                        Swal.fire(
+                            {
+                                title: "Lưu ý",
+                                text: "Cập nhật sản phẩm thành công !",
+                                icon: 'info',
+                                confirmButtonText: 'OK'
+                            }
+                        );
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1500);
+                    }
+                    else {
+                        Swal.fire(
+                            {
+                                title: "Lưu ý",
+                                text: "Cập nhật sản phẩm không thành công !",
+                                icon: 'info',
+                                confirmButtonText: 'OK'
+                            }
+                        );
+                    }
+                }
+            })
+        })
+
+        $("#btnadd").on('click', () => {
+            var data = {
+                "name": $("#name").val(),
+                "price": $("#price").val(),
+                "quantity": $("#quantity").val(),
+                "description": $("#description").val(),
+                "category_id": $("#category_id").val(),
+                "image": $("#image").val()
+            }
+            $.ajax(baseUrl + "Products/Create-products", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + localStorage.getItem(varJWT)
+                },
+                data: JSON.stringify(data),
+                success: (res) => {
+                    if (res.status == true) {
+                        Swal.fire(
+                            {
+                                title: "Lưu ý",
+                                text: "Thêm sản phẩm thành công !",
+                                icon: 'info',
+                                confirmButtonText: 'OK'
+                            }
+                        );
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1500);
+                    }
+                    else {
+                        Swal.fire(
+                            {
+                                title: "Lưu ý",
+                                text: "Thêm sản phẩm không thành công !",
+                                icon: 'info',
+                                confirmButtonText: 'OK'
+                            }
+                        );
+                    }
+                }
+            })
+        })
+
+
+
+    })
+</script>
+<script>
+    const ExitUpdate = () => {
+        $("#add-update").attr('style', 'display: none');
+    }
+    const updateRow = (id, id_product) => {
+        $("#" + id).attr('style', 'display: block');
+        $("#idProduct").val(id_product);
+    }
+    const exit = () => {
+        $("#add-insert").attr('style', 'display: none');
+    }
+    const show = () => {
+        $("#add-insert").attr('style', 'display: block');
+    }
+    const deleteRow = (id) => {
+        $.ajax(baseUrl + "Products/Delete-Products?id=" + id, {
+            method: "POST",
+            headers: {
+                "Authorization": "Bearer " + localStorage.getItem(varJWT)
+            },
+            success: (res) => {
+                if (res.status == true) {
+                    Swal.fire(
+                        {
+                            title: "Lưu ý",
+                            text: "Xóa thành công !",
+                            icon: 'info',
+                            confirmButtonText: 'OK'
+                        }
+                    );
+                    setTimeout(() => {
+                        location.reload();
+                    }, 1000);
+                }
+                else {
+                    Toastify({
+                        text: "Xóa thất bại !",
+                        duration: 3000
+                    }).showToast();
+                }
+            },
+            error: (res) => {
+                Toastify({
+                    text: "Đã xảy ra lỗi !",
+                    duration: 3000
+                }).showToast();
+            }
+        })
+    }
+</script>
+
+</html>
